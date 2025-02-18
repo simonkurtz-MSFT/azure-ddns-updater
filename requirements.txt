@@ -1,0 +1,5 @@
+azure-core
+azure-identity
+azure-mgmt-dns
+azure-mgmt-network
+schedule
