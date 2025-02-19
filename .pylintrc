@@ -1,0 +1,6 @@
+[MESSAGES CONTROL]
+disable =
+    C0301,  # Line too long
+    R0903,  # Too few public methods
+    W0603,  # Using the global statement
+    W0718,  # Unused variable
