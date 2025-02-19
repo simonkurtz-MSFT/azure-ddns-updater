@@ -4,7 +4,11 @@ azure_dns_updater.py: A dynamic DNS updater for Azure DNS
 This script retrieves your current public IP address and updates the specified Azure DNS A record if it has changed.
 """
 
-import os, requests, schedule, sys, time
+from os import getenv
+from schedule import every, run_pending
+from sys import exit
+from time import sleep
+from requests import get
 from datetime import datetime
 from azure.identity import ClientSecretCredential
 from azure.mgmt.dns import DnsManagementClient
@@ -22,11 +26,11 @@ def log(message):
 def get_env_var(name, hide_value = False):
     """Retrieve an environment variable; exit if not set as they are all required."""
 
-    value = os.getenv(name)
+    value = getenv(name)
 
     if value is None:
         log(f"Error: The environment variable {name} is not set.")
-        sys.exit(1)
+        exit(1)
 
     value = value.strip()
 
@@ -38,7 +42,7 @@ def get_public_ip():
     """Retrieve the current public IP address using ipify."""
 
     try:
-        response = requests.get("https://api.ipify.org?format=json")
+        response = get("https://api.ipify.org?format=json")
         response.raise_for_status()
         ip = response.json().get("ip", "")
 
@@ -69,7 +73,7 @@ RECORD_NAMES = get_env_var('RECORD_NAMES')
 names = [name.strip() for name in RECORD_NAMES.strip("[]").split(',')]
 
 try:
-    INTERVAL_MINUTES = int(os.getenv('INTERVAL_MINUTES').strip())
+    INTERVAL_MINUTES = int(getenv('INTERVAL_MINUTES').strip())
 except (TypeError, ValueError):
     INTERVAL_MINUTES = 5
 
@@ -98,7 +102,7 @@ def main():
         credential = ClientSecretCredential(AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET)
     except Exception as e:
         log(f"Error creating service principal credentials: {e}")
-        sys.exit(1)
+        exit(1)
 
     dns_client = DnsManagementClient(credential, SUBSCRIPTION_ID)
 
@@ -143,12 +147,12 @@ if __name__ == "__main__":
         log("")
         log(f"Starting schedule with {INTERVAL_MINUTES} minute interval...")
 
-        schedule.every(INTERVAL_MINUTES).minutes.do(main)
+        every(INTERVAL_MINUTES).minutes.do(main)
 
         try:
             while True:
-                schedule.run_pending()
-                time.sleep(1)
+                run_pending()
+                sleep(1)
         except KeyboardInterrupt:
             log("Exiting gracefully...")
 

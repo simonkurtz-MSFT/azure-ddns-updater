@@ -68,7 +68,11 @@ We first need to create an Azure Service Principal to obtain a client/app ID and
 
 ### Configure Environment Variables
 
-Variables get passed into the python script (or, later, the container).
+These are two ways to set up the environment variables:
+
+#### Environment File
+
+If you are not running a container locally, you can set variables to get passed into the python script (or, later, the container).
 
 1. Copy the `azure-ddns-updater.env.template` file to one named `azure-ddns-updater.env`.
 1. Replace these placeholders with your own values. **Do not use quotes or apostrophes with strings.**:
@@ -78,7 +82,7 @@ Variables get passed into the python script (or, later, the container).
 
     ```shell
     AZURE_CLIENT_ID=<your Client / App ID>
-    AZURE_CLIENT_SECRET=<your Client App Secret>
+    AZURE_CLIENT_SECRET=<your Client App Secret (best to reference rather than adding in clear text here)>
     AZURE_TENANT_ID=<your Azure Tenant ID>
     SUBSCRIPTION_ID=<your Azure Subscription ID>
     RESOURCE_GROUP=<your Azure DNS Zone resource group>
@@ -100,9 +104,20 @@ Variables get passed into the python script (or, later, the container).
     INTERVAL_MINUTES=<number of minutes for the interval or negative for a single run>
     ```
 
+#### Docker Compose
+
+Modify the Docker `compose.yml` file with your values, then save it.
+
 ## Test
 
+There are two ways to test this:
+
+### Environment File
+
 The python script can be executed in a shell via `./run.sh`. Note the environment variable filename in the script and change, if desired.
+
+### Docker Compose
+If you want to run the container, s
 
 ## Build & Push the Container to the Container Registry
 

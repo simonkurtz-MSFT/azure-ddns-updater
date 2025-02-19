@@ -1,0 +1,14 @@
+services:
+  azure-ddns-updater:
+    container_name: azure-ddns-updater
+    image: simonkurtzmsft/azure-ddns-updater-arm64:latest
+    restart: unless-stopped
+    environment:
+      AZURE_CLIENT_ID: '<your Client ID>'
+      AZURE_TENANT_ID: '<your Azure Tenant ID>'
+      AZURE_CLIENT_SECRET: '<your Client App Secret>'
+      SUBSCRIPTION_ID: '<your Azure Subscription ID>'
+      RESOURCE_GROUP: '<your Azure DNS Zone resource group>'
+      DNS_ZONE: '<your Azure DNS Zone>'
+      RECORD_NAMES: '[<DNS A record 1>,<DNS A record 2>,<...>]'
+      INTERVAL_MINUTES: <number of minutes for the interval or negative for a single run>

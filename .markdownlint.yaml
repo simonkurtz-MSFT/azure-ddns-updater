@@ -13,3 +13,7 @@ MD013:
 # MD041/first-line-heading/first-line-h1 : First line in a file should be a top-level heading : https://github.com/DavidAnson/markdownlint/blob/v0.34.0/doc/md041.md
 MD041:
   false
+
+# MD024/no-duplicate-heading : No duplicate headings : https://github.com/DavidAnson/markdownlint/blob/v0.34.0/doc/md024.md
+MD024:
+    false
