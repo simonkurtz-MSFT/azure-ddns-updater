@@ -1,5 +1,8 @@
 # Azure Dynamic DNS Updater
 
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/simonkurtz-MSFT/azure-ddns-updater/tree/main)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://mit-license.org/)
+
 This repo exists to support scenarios where an IP address needs to be updated in DNS records. It used to be that dynamic DNS was a free offering, but that has changed. Most services I see nowadays charge, or, if it's free, it's limited in such ways as to not support custom domains. ISPs typically upcharge for static IPs such as through business plans, etc. As I use my own domain with Azure DNS, I wanted a process that could update the A record any time my home network's public IP changed. But Azure DNS does not natively support dynamic DNS. Records must be updated with an external process. So I went out in search to find whether a solution existed already and came across [Renan's blog post](https://renanm.com/posts/keep-your-dns-uptodate-with-azure/), which then formed the basis of my project.
 
 ## Docker Container Images
@@ -128,3 +131,7 @@ When running `detached`, you can view the logs.
 
 1) `docker ps`
 1) `docker logs -f <container id or name>`
+
+## Limitations
+
+- Does not support IPv6
