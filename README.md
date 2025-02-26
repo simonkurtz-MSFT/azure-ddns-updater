@@ -117,7 +117,13 @@ There are two ways to test this:
 The python script can be executed in a shell via `./run.sh`. Note the environment variable filename in the script and change, if desired.
 
 ### Docker Compose
-If you want to run the container, s
+
+Follow these steps if you want to run the container:
+
+1. Build the container (see steps 1 & 2 in the next section).
+1. Change the [container image source to a local directory](https://stackoverflow.com/questions/70473147/how-to-use-locally-built-image-in-docker-compose-file-correctly).
+1. Switch to the directory containing the `compose.yml` file.
+1. `docker compose up -d`
 
 ## Build & Push the Container to the Container Registry
 
@@ -131,22 +137,29 @@ The image should be in your registry's repository now.
 
 ## Pull & Run the Container
 
-Pull the image down on a host running Docker. You can either pull it from [my repos on DockerHub](https://hub.docker.com/u/simonkurtzmsft) or host your own.
+Pull the image down on a host running Docker. You can either pull it from [my repos on DockerHub](https://hub.docker.com/u/simonkurtzmsft) or host your own. There are a variety of ways to do this.
 
-1) On the host, create an environment configuration file, *azure-ddns-updater.env*. Copy the settings from above. Alternatively, take another approach to passing variables into the container (e.g. arguments on `docker run`)
+### Docker Compose
 
-1) `docker pull <container-registry-name>/azure-ddns-updater-arm64:latest`
-1) Run the container:
-    1) `docker run --detach --env-file azure-ddns-updater-env <container-registry-name>/azure-ddns-updater-arm64:latest` to run it detached (preferred method), or
-    1) `docker run --it --env-file azure-ddns-updater-env <container-registry-name>/azure-ddns-updater-arm64:latest` to run it interactively and view the logs (good for initial verification)
+1. On the host, copy this repo's Docker `compose.yml` file with your values.
+1. `docker compose up -d` (`-d` runs in detached mode, which is what we want)
+
+### Environment File
+
+1. On the host, create an environment configuration file, *azure-ddns-updater.env*. Copy the settings from above. Alternatively, take another approach to passing variables into the container (e.g. arguments on `docker run`)
+
+1. `docker pull <container-registry-name>/azure-ddns-updater-arm64:latest`
+1. Run the container:
+    1. `docker run --detach --env-file azure-ddns-updater-env <container-registry-name>/azure-ddns-updater-arm64:latest` to run it detached (preferred method), or
+    1. `docker run --it --env-file azure-ddns-updater-env <container-registry-name>/azure-ddns-updater-arm64:latest` to run it interactively and view the logs (good for initial verification)
 
 ## View the logs
 
 When running `detached`, you can view the logs.
 
-1) `docker ps`
-1) `docker logs -f <container id or name>`
+1. `docker ps`
+1. `docker logs -f <container id or name>`
 
 ## Limitations
 
-- Does not support IPv6
+- Does not (yet) support IPv6 (AAAA records).

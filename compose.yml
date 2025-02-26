@@ -6,7 +6,7 @@ services:
     environment:
       AZURE_CLIENT_ID: '<your Client ID>'
       AZURE_TENANT_ID: '<your Azure Tenant ID>'
-      AZURE_CLIENT_SECRET: '<your Client App Secret>'
+      AZURE_CLIENT_SECRET: '<your Client App Secret (best to reference rather than adding in clear text here)>'
       SUBSCRIPTION_ID: '<your Azure Subscription ID>'
       RESOURCE_GROUP: '<your Azure DNS Zone resource group>'
       DNS_ZONE: '<your Azure DNS Zone>'
