@@ -1,0 +1,32 @@
+[project]
+name = "azure_ddns_updater"
+version = "1.0.0-alpha1"
+authors = [
+  { name="Simon Kurtz", email="simonkurtz@gmail.com" },
+]
+description = "A dynamic DNS updater for Azure DNS."
+readme = "PACKAGE_README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "httpx"
+]
+[project.urls]
+Changelog = "https://github.com/simonkurtz-MSFT/azure-ddns-updater/releases"
+Documentation = "https://github.com/simonkurtz-MSFT/azure-ddns-updater/blob/main/README.md"
+GitHub-Statistics = "https://shields.io/github/stars/simonkurtz-MSFT/azure-ddns-updater?style=social"
+Homepage = "https://github.com/simonkurtz-MSFT/azure-ddns-updater"
+Issues = "https://github.com/simonkurtz-MSFT/azure-ddns-updater/issues"
+Repository = "https://github.com/simonkurtz-MSFT/azure-ddns-updater"
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
