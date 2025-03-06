@@ -11,11 +11,19 @@ from requests import get
 from schedule import every, run_pending
 from sys import exit
 from time import sleep
+from typing import Final
 # Azure Imports
 from azure.identity import ClientSecretCredential
 from azure.mgmt.dns import DnsManagementClient
 from azure.mgmt.dns.models import RecordSet, ARecord
 from azure.core.exceptions import ResourceNotFoundError
+
+# ------------------------
+#    CONSTANTS
+# ------------------------
+
+VERSION: Final[str] = "1.0.0"
+TTL: Final[int] = 300  # Time-to-live in seconds
 
 # ------------------------
 #    HELPER FUNCTIONS
@@ -60,7 +68,8 @@ def get_public_ip():
 # ------------------------
 #    CONFIGURATION
 # ------------------------
-log("Azure Dynamic DNS Updater - V1.0.0")
+
+log(f"Azure Dynamic DNS Updater - {VERSION}")
 log("----------------------------------")
 log("")
 
@@ -80,8 +89,6 @@ except (TypeError, ValueError):
     INTERVAL_MINUTES = 5
 
 log(f"{'INTERVAL_MINUTES':20} : {INTERVAL_MINUTES}")
-
-TTL = 300  # Time-to-live in seconds
 
 # ------------------------
 #    MAIN LOGIC
