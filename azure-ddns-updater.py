@@ -36,7 +36,7 @@ def get_env_var(name, hide_value = False):
 
     value = value.strip()
 
-    log(f"{name:20} : {'*** (hidden)' if hide_value else value}")
+    log(f"{name:20} = {'*** (hidden)' if hide_value else value}")   # Use equal instead of colon for Python <= 3.11 linting
 
     return value
 
