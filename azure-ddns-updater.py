@@ -99,7 +99,7 @@ try:
 except (TypeError, ValueError):
     INTERVAL_MINUTES = 5
 
-log(f"{'INTERVAL_MINUTES':20} : {INTERVAL_MINUTES}")
+log(f"{'INTERVAL_MINUTES':20} = {INTERVAL_MINUTES}")
 
 # ------------------------
 #    MAIN LOGIC
