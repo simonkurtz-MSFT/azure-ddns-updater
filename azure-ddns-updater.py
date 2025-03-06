@@ -80,7 +80,7 @@ def update_health_file(health_status: int):
 #    CONFIGURATION
 # ------------------------
 
-log(f"Azure Dynamic DNS Updater - {VERSION}")
+log(f"Azure Dynamic DNS Updater - V{VERSION}")
 log("----------------------------------")
 log("")
 
