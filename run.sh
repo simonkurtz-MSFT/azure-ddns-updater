@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Load the azure-ddns-updater-env file
 if [ -f azure-ddns-updater.env ]; then

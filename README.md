@@ -61,10 +61,17 @@ We first need to create an Azure Service Principal to obtain a client/app ID and
     }
     ```
 
-### Set UpPython Requirements
+### Python Requirements
 
-1. Create a Python virtual environment (in VS Code, press F1, then type *Python: Select Interpreter*, followed by *Create Virtual Environment* )
-1. Run `pip install -r ./requirements.txt` to install the required Python packages.
+To avoid clobbering global Python packages, it is advisable to create a virtual environment local to this project.
+
+1. In VS Code, press F1, then type *Python: Select Interpreter*.
+1. Select *Create Virtual Environment*.
+1. Select *Venv*.
+1. Select the Python version to use based on what you have installed.
+1. Check *requirements.txt* to subsequently install all the packages this project needs. Press *OK* to start the setup. This may take a few minutes.
+
+You should now see a new *.venv* folder in the root of this project. Note that the folder and its contents are deliberately excluded from Git, so they will not be checked in.
 
 ### Configure Environment Variables
 
@@ -127,13 +134,43 @@ Follow these steps if you want to run the container:
 
 ## Build & Push the Container to the Container Registry
 
-I primarily build for `linux/arm64` as the container will run on a Raspberry Pi, but you can alter that build behavior as you need (e.g. `linux/amd64`). Replace `<container-registry-name>` with your own. You can also replace the `latest` tag as you see fit.
+Ensure that the desired version is set in the `VERSION` constant in *azure-ddns-updater.py*.
 
-1. `docker build --platform linux/arm64 -t azure-ddns-updater-arm64:latest .`
-1. `docker tag azure-ddns-updater-arm64:latest <container-registry-name>/azure-ddns-updater-arm64:latest`
-1. `docker push <container-registry-name>/azure-ddns-updater-arm64:latest`
+### ARM64
 
-The image should be in your registry's repository now.
+I primarily build for `linux/arm64` as the container will run on a Raspberry Pi, but you can alter that build behavior as you need (e.g. `linux/amd64`). Replace `<container-registry-name>` and `<version>` with your own.
+
+1. In a shell, set the variables appropriately:
+
+    ```shell
+    BUILD_PLATFORM=linux/arm64
+    IMAGE_NAME=azure-ddns-updater-arm64
+    CONTAINER_REGISTRY_NAME=<container-registry-name>
+    AZURE_DDNS_UPDATER_CONTAINER_VERSION=<version>
+    ```
+
+1. Execute the build, tag the image, then push it to the registry:
+
+    ```shell
+    docker build --platform $BUILD_PLATFORM -t $CONTAINER_REGISTRY_NAME/$IMAGE_NAME:$AZURE_DDNS_UPDATER_CONTAINER_VERSION .
+    docker push $CONTAINER_REGISTRY_NAME/$IMAGE_NAME:$AZURE_DDNS_UPDATER_CONTAINER_VERSION
+    ```
+
+1. The image should be in your registry's repository now. If you need to set this version to be `latest` as well, run the following:
+
+    ```shell
+    docker tag $IMAGE_NAME:$AZURE_DDNS_UPDATER_CONTAINER_VERSION $CONTAINER_REGISTRY_NAME/$IMAGE_NAME:latest
+    docker push $CONTAINER_REGISTRY_NAME/$IMAGE_NAME:latest
+    ```
+
+### AMD64
+
+1. Repeat the steps above but set two variables differently:
+
+    ```shell
+    BUILD_PLATFORM=linux/amd64
+    IMAGE_NAME=azure-ddns-updater-amd64
+    ```
 
 ## Pull & Run the Container
 
@@ -159,6 +196,16 @@ When running `detached`, you can view the logs.
 
 1. `docker ps`
 1. `docker logs -f <container id or name>`
+
+## Check Container Health
+
+The Dockerfile sets up a health check, which you can query: `docker inspect --format='{{json .State.Health.Status}}' azure-ddns-updater`
+
+For more details, use jq to format the JSON of the larger object. You may need to get jq via `sudo apt-get install jq`.
+
+```shell
+docker inspect --format='{{json .State.Health}}' azure-ddns-updater | jq .
+```
 
 ## Limitations
 

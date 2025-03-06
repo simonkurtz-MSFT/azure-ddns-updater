@@ -4,16 +4,28 @@ azure_dns_updater.py: A dynamic DNS updater for Azure DNS
 This script retrieves your current public IP address and updates the specified Azure DNS A record if it has changed.
 """
 
+# Standard Python Imports
 import sys
-from os import getenv
+from os import getenv, path
 from datetime import datetime
 from time import sleep
+from typing import Final
 from requests import get
+
+# Third-Party Imports
 from schedule import every, run_pending
 from azure.identity import ClientSecretCredential
 from azure.mgmt.dns import DnsManagementClient
 from azure.mgmt.dns.models import RecordSet, ARecord
 from azure.core.exceptions import ResourceNotFoundError
+
+# ------------------------
+#    CONSTANTS
+# ------------------------
+
+VERSION: Final[str] = "1.1.0"
+TTL: Final[int] = 300  # Time-to-live in seconds
+HEALTH_FILE: Final[str] = path.join(path.dirname(__file__), "health.log")
 
 # ------------------------
 #    HELPER FUNCTIONS
@@ -32,6 +44,7 @@ def get_env_var(name, hide_value = False):
 
     if value is None:
         log(f"Error: The environment variable {name} is not set.")
+        update_health_file(1)
         sys.exit(1)
 
     value = value.strip()
@@ -57,10 +70,17 @@ def get_public_ip():
 
         return None
 
+def update_health_file(health_status: int):
+    """Update the health file with the current status."""
+
+    with open(HEALTH_FILE, "w", encoding = "utf-8") as file:
+        file.write(str(health_status))
+
 # ------------------------
 #    CONFIGURATION
 # ------------------------
-log("Azure Dynamic DNS Updater - V1.0.0")
+
+log(f"Azure Dynamic DNS Updater - V{VERSION}")
 log("----------------------------------")
 log("")
 
@@ -81,8 +101,6 @@ except (TypeError, ValueError):
 
 log(f"{'INTERVAL_MINUTES':20} : {INTERVAL_MINUTES}")
 
-TTL = 300  # Time-to-live in seconds
-
 # ------------------------
 #    MAIN LOGIC
 # ------------------------
@@ -90,6 +108,7 @@ TTL = 300  # Time-to-live in seconds
 def main():
     """Main logic for the script."""
 
+    update_health_file(0)
     log("")
 
     # Get the public IP.
@@ -97,6 +116,7 @@ def main():
 
     if not current_ip:
         log("Could not get public IP. Skipping update.")
+        update_health_file(1)
         return
 
     log(f"Current public IP: {current_ip}")
@@ -106,42 +126,41 @@ def main():
         credential = ClientSecretCredential(AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET)
     except Exception as e:
         log(f"Error creating service principal credentials: {e}")
+        update_health_file(1)
         sys.exit(1)
 
     dns_client = DnsManagementClient(credential, SUBSCRIPTION_ID)
 
-    # Try to retrieve the existing A records.
-    ip_match = True
-
-    try:
-        for name in names:
+    # Get the current IP and create or update the DNS records, if necessary
+    for name in names:
+        try:
+            # Attempt to retrieve the existing A record
             record_set = dns_client.record_sets.get(RESOURCE_GROUP, DNS_ZONE, name, "A")
             existing_ips = [record.ipv4_address for record in record_set.a_records] if record_set.a_records else []
             ttl = record_set.ttl or TTL
 
             if current_ip in existing_ips:
                 log(f"DNS A record {name}: IP matches current DNS. No update needed.")
-            else:
-                ip_match = False
-                log(f"DNS A record {name}: Existing DNS A record IPs: {existing_ips}")
-                log(f"DNS A record {name}: IPs differ. Updating DNS record.")
-    except ResourceNotFoundError:
-        ip_match = False
-        log(f"DNS A record {name}: No existing A record found. A new record set will be created.")
-        ttl = TTL
+                continue
 
-    # Create or update DNS record if needed.
-    if not ip_match:
-        for name in names:
-            record_set_params = RecordSet(
-                ttl = ttl,
-                a_records = [ARecord(ipv4_address = current_ip)]
-            )
-            try:
-                dns_client.record_sets.create_or_update(RESOURCE_GROUP, DNS_ZONE, name, "A", record_set_params)
-                log(f"DNS A record {name}: IP successfully updated to {current_ip} with TTL {ttl} seconds.")
-            except Exception as e:
-                log(f"DNS A record {name}: Error updating DNS record: {e}")
+            log(f"DNS A record {name}: Existing DNS A record IPs: {existing_ips}")
+            log(f"DNS A record {name}: IPs differ. Updating DNS record.")
+
+        except ResourceNotFoundError:
+            log(f"DNS A record {name}: No existing A record found. A new record set will be created.")
+            ttl = TTL
+
+        # Create or update the record with the single IP (typical dynamic DNS behavior), not modify any array of existing IPs.
+        record_set_params = RecordSet(
+            ttl = ttl,
+            a_records = [ARecord(ipv4_address = current_ip)]
+        )
+        try:
+            dns_client.record_sets.create_or_update(RESOURCE_GROUP, DNS_ZONE, name, "A", record_set_params)
+            success_message = f"DNS A record {name}: IP successfully updated to {current_ip} with TTL {ttl} seconds."
+            log(success_message)
+        except Exception as e:
+            log(f"DNS A record {name}: Error updating DNS record: {e}")
 
 if __name__ == "__main__":
     main()
