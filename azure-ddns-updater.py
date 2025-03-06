@@ -7,7 +7,7 @@ This script retrieves your current public IP address and updates the specified A
 # Standard Python Imports
 import sys
 from os import getenv, path
-from datetime import datetime, timezone
+from datetime import datetime
 from time import sleep
 from typing import Final
 from requests import get
