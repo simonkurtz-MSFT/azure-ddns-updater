@@ -106,38 +106,36 @@ def main():
 
     dns_client = DnsManagementClient(credential, SUBSCRIPTION_ID)
 
-    # Try to retrieve the existing A records.
-    ip_match = True
-
-    try:
-        for name in names:
+    # Get the current IP and create or update the DNS records, if necessary
+    for name in names:
+        try:
+            # Attempt to retrieve the existing A record
             record_set = dns_client.record_sets.get(RESOURCE_GROUP, DNS_ZONE, name, "A")
             existing_ips = [record.ipv4_address for record in record_set.a_records] if record_set.a_records else []
             ttl = record_set.ttl or TTL
 
             if current_ip in existing_ips:
                 log(f"DNS A record {name}: IP matches current DNS. No update needed.")
-            else:
-                ip_match = False
-                log(f"DNS A record {name}: Existing DNS A record IPs: {existing_ips}")
-                log(f"DNS A record {name}: IPs differ. Updating DNS record.")
-    except ResourceNotFoundError:
-        ip_match = False
-        log(f"DNS A record {name}: No existing A record found. A new record set will be created.")
-        ttl = TTL
+                continue
 
-    # Create or update DNS record if needed.
-    if not ip_match:
-        for name in names:
-            record_set_params = RecordSet(
-                ttl = ttl,
-                a_records = [ARecord(ipv4_address = current_ip)]
-            )
-            try:
-                dns_client.record_sets.create_or_update(RESOURCE_GROUP, DNS_ZONE, name, "A", record_set_params)
-                log(f"DNS A record {name}: IP successfully updated to {current_ip} with TTL {ttl} seconds.")
-            except Exception as e:
-                log(f"DNS A record {name}: Error updating DNS record: {e}")
+            log(f"DNS A record {name}: Existing DNS A record IPs: {existing_ips}")
+            log(f"DNS A record {name}: IPs differ. Updating DNS record.")
+
+        except ResourceNotFoundError:
+            log(f"DNS A record {name}: No existing A record found. A new record set will be created.")
+            ttl = TTL
+
+        # Create or update the record with the single IP (typical dynamic DNS behavior), not modify any array of existing IPs.
+        record_set_params = RecordSet(
+            ttl = ttl,
+            a_records = [ARecord(ipv4_address = current_ip)]
+        )
+        try:
+            dns_client.record_sets.create_or_update(RESOURCE_GROUP, DNS_ZONE, name, "A", record_set_params)
+            success_message = f"DNS A record {name}: IP successfully updated to {current_ip} with TTL {ttl} seconds."
+            log(success_message)
+        except Exception as e:
+            log(f"DNS A record {name}: Error updating DNS record: {e}")
 
 if __name__ == "__main__":
     main()
