@@ -61,10 +61,17 @@ We first need to create an Azure Service Principal to obtain a client/app ID and
     }
     ```
 
-### Set UpPython Requirements
+### Python Requirements
 
-1. Create a Python virtual environment (in VS Code, press F1, then type *Python: Select Interpreter*, followed by *Create Virtual Environment* )
-1. Run `pip install -r ./requirements.txt` to install the required Python packages.
+To avoid clobbering global Python packages, it is advisable to create a virtual environment local to this project.
+
+1. In VS Code, press F1, then type *Python: Select Interpreter*.
+1. Select *Create Virtual Environment*.
+1. Select *Venv*.
+1. Select the Python version to use based on what you have installed.
+1. Check *requirements.txt* to subsequently install all the packages this project needs. Press *OK* to start the setup. This may take a few minutes.
+
+You should now see a new *.venv* folder in the root of this project. Note that the folder and its contents are deliberately excluded from Git, so they will not be checked in.
 
 ### Configure Environment Variables
 
