@@ -134,13 +134,16 @@ Follow these steps if you want to run the container:
 
 ## Build & Push the Container to the Container Registry
 
-I primarily build for `linux/arm64` as the container will run on a Raspberry Pi, but you can alter that build behavior as you need (e.g. `linux/amd64`). Replace `<container-registry-name>` with your own. You can also replace the `latest` tag as you see fit.
+I primarily build for `linux/arm64` as the container will run on a Raspberry Pi, but you can alter that build behavior as you need (e.g. `linux/amd64`). Replace `<container-registry-name>` with your own.
 
-1. `docker build --platform linux/arm64 -t azure-ddns-updater-arm64:latest .`
-1. `docker tag azure-ddns-updater-arm64:latest <container-registry-name>/azure-ddns-updater-arm64:latest`
-1. `docker push <container-registry-name>/azure-ddns-updater-arm64:latest`
+1. Ensure that the desired version is set in the `VERSION` constant in *azure-ddns-updater.py*.
+1. Replace `<container-registry-name>` and set the variable in your shell: `CONTAINER_REGISTRY_NAME=<container-registry-name>`
+1. Replace `<version>` and set the new version variable in your shell: `AZURE_DDNS_UPDATER_CONTAINER_VERSION=<version>`
+1. `docker build --platform linux/arm64 -t azure-ddns-updater-arm64:$AZURE_DDNS_UPDATER_CONTAINER_VERSION .`
+1. `docker tag azure-ddns-updater-arm64:$AZURE_DDNS_UPDATER_CONTAINER_VERSION $CONTAINER_REGISTRY_NAME/azure-ddns-updater-arm64:$AZURE_DDNS_UPDATER_CONTAINER_VERSION`
+1. `docker push $CONTAINER_REGISTRY_NAME/azure-ddns-updater-arm64:$AZURE_DDNS_UPDATER_CONTAINER_VERSION`
 
-The image should be in your registry's repository now.
+The image should be in your registry's repository now. If you need to set this version to be `latest` later on, please repeat steps 3-6 above with `latest` as the string for version.
 
 ## Pull & Run the Container
 
