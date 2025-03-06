@@ -3,3 +3,6 @@ azure-identity
 azure-mgmt-dns
 azure-mgmt-network
 schedule
+
+# Testing
+pylint

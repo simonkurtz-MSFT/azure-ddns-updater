@@ -4,12 +4,12 @@ azure_dns_updater.py: A dynamic DNS updater for Azure DNS
 This script retrieves your current public IP address and updates the specified Azure DNS A record if it has changed.
 """
 
+import sys
 from os import getenv
-from schedule import every, run_pending
-from sys import exit
+from datetime import datetime
 from time import sleep
 from requests import get
-from datetime import datetime
+from schedule import every, run_pending
 from azure.identity import ClientSecretCredential
 from azure.mgmt.dns import DnsManagementClient
 from azure.mgmt.dns.models import RecordSet, ARecord
@@ -20,6 +20,8 @@ from azure.core.exceptions import ResourceNotFoundError
 # ------------------------
 
 def log(message):
+    """Log a timestamped message to the console."""
+
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     print(f"[{timestamp}] {message}", flush = True)
 
@@ -30,11 +32,11 @@ def get_env_var(name, hide_value = False):
 
     if value is None:
         log(f"Error: The environment variable {name} is not set.")
-        exit(1)
+        sys.exit(1)
 
     value = value.strip()
 
-    log(f"{name:20} : {value if not hide_value else f"*** (hidden)"}")
+    log(f"{name:20} = {'*** (hidden)' if hide_value else value}")   # Use equal instead of colon for Python <= 3.11 linting
 
     return value
 
@@ -42,7 +44,7 @@ def get_public_ip():
     """Retrieve the current public IP address using ipify."""
 
     try:
-        response = get("https://api.ipify.org?format=json")
+        response = get("https://api.ipify.org?format=json", timeout = (5, 5))  # 5 second connect timeout, 5 second read timeout
         response.raise_for_status()
         ip = response.json().get("ip", "")
 
@@ -86,6 +88,8 @@ TTL = 300  # Time-to-live in seconds
 # ------------------------
 
 def main():
+    """Main logic for the script."""
+
     log("")
 
     # Get the public IP.
@@ -102,7 +106,7 @@ def main():
         credential = ClientSecretCredential(AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET)
     except Exception as e:
         log(f"Error creating service principal credentials: {e}")
-        exit(1)
+        sys.exit(1)
 
     dns_client = DnsManagementClient(credential, SUBSCRIPTION_ID)
 
