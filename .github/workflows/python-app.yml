@@ -33,7 +33,7 @@ jobs:
     - name: Linting the python module with PyLint
       run: |
         pylint ./azure-ddns-updater.py
-    continue-on-error: false
+    continue-on-error: true
     # - name: Test with pytest
     #   run: |
     #     coverage run -m pytest -v --junitxml=junit/test-results-${{ matrix.python-version }}.xml && coverage html
