@@ -23,7 +23,7 @@ from azure.core.exceptions import ResourceNotFoundError
 #    CONSTANTS
 # ------------------------
 
-VERSION: Final[str] = "1.0.0"
+VERSION: Final[str] = "1.1.0"
 TTL: Final[int] = 300  # Time-to-live in seconds
 HEALTH_FILE: Final[str] = path.join(path.dirname(__file__), "health.log")
 
