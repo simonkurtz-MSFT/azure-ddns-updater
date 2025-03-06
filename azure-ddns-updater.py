@@ -4,11 +4,14 @@ azure_dns_updater.py: A dynamic DNS updater for Azure DNS
 This script retrieves your current public IP address and updates the specified Azure DNS A record if it has changed.
 """
 
-import sys
+# Standard Python Imports
+from sys
 from os import getenv
 from datetime import datetime
 from time import sleep
 from requests import get
+
+# Third-Party Imports
 from schedule import every, run_pending
 from azure.identity import ClientSecretCredential
 from azure.mgmt.dns import DnsManagementClient
