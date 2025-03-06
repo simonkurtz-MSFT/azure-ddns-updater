@@ -36,7 +36,7 @@ def get_env_var(name, hide_value = False):
 
     value = value.strip()
 
-    log(f"{name:20} : {value if not hide_value else "*** (hidden)"}")
+    log(f"{name:20} : {'*** (hidden)' if hide_value else value}")
 
     return value
 
