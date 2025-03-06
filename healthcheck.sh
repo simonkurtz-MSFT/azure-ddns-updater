@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Check if the Python script is running
 if ! pgrep -f "python3 azure-ddns-updater.py" > /dev/null; then

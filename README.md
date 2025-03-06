@@ -197,6 +197,16 @@ When running `detached`, you can view the logs.
 1. `docker ps`
 1. `docker logs -f <container id or name>`
 
+## Check Container Health
+
+The Dockerfile sets up a health check, which you can query: `docker inspect --format='{{json .State.Health.Status}}' azure-ddns-updater`
+
+For more details, use jq to format the JSON of the larger object. You may need to get jq via `sudo apt-get install jq`.
+
+```shell
+docker inspect --format='{{json .State.Health}}' azure-ddns-updater | jq .
+```
+
 ## Limitations
 
 - Does not (yet) support IPv6 (AAAA records).
