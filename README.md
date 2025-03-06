@@ -138,7 +138,7 @@ Ensure that the desired version is set in the `VERSION` constant in *azure-ddns-
 
 ### ARM64
 
-I primarily build for `linux/arm64` as the container will run on a Raspberry Pi, but you can alter that build behavior as you need (e.g. `linux/amd64`). Replace `<container-registry-name>` and `<version>`with your own.
+I primarily build for `linux/arm64` as the container will run on a Raspberry Pi, but you can alter that build behavior as you need (e.g. `linux/amd64`). Replace `<container-registry-name>` and `<version>` with your own.
 
 1. In a shell, set the variables appropriately:
 
