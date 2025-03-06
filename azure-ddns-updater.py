@@ -7,7 +7,7 @@ This script retrieves your current public IP address and updates the specified A
 # Standard Python Imports
 import sys
 from os import getenv, path
-from datetime import datetime
+from datetime import datetime, timezone
 from time import sleep
 from typing import Final
 from requests import get
@@ -34,8 +34,8 @@ HEALTH_FILE: Final[str] = path.join(path.dirname(__file__), "health.log")
 def log(message):
     """Log a timestamped message to the console."""
 
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(f"[{timestamp}] {message}", flush = True)
+    timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+    print(f"[{timestamp} UTC] {message}", flush = True)
 
 def get_env_var(name, hide_value = False):
     """Retrieve an environment variable; exit if not set as they are all required."""
