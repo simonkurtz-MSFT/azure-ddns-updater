@@ -12,3 +12,9 @@ services:
       DNS_ZONE: '<your Azure DNS Zone>'
       RECORD_NAMES: '[<DNS A record 1>,<DNS A record 2>,<...>]'
       INTERVAL_MINUTES: <number of minutes for the interval or negative for a single run>
+    healthcheck:
+      test: ["CMD", "./healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

@@ -5,9 +5,9 @@ This script retrieves your current public IP address and updates the specified A
 """
 
 # Standard Python Imports
-from sys
-from os import getenv
-from datetime import datetime
+import sys
+from os import getenv, path
+from datetime import datetime, timezone
 from time import sleep
 from typing import Final
 from requests import get
@@ -25,6 +25,7 @@ from azure.core.exceptions import ResourceNotFoundError
 
 VERSION: Final[str] = "1.0.0"
 TTL: Final[int] = 300  # Time-to-live in seconds
+HEALTH_FILE: Final[str] = path.join(path.dirname(__file__), "health.log")
 
 # ------------------------
 #    HELPER FUNCTIONS
@@ -43,6 +44,7 @@ def get_env_var(name, hide_value = False):
 
     if value is None:
         log(f"Error: The environment variable {name} is not set.")
+        update_health_file(1)
         sys.exit(1)
 
     value = value.strip()
@@ -67,6 +69,12 @@ def get_public_ip():
         log(f"Error retrieving public IP: {e}")
 
         return None
+
+def update_health_file(health_status: int):
+    """Update the health file with the current status."""
+
+    with open(HEALTH_FILE, "w", encoding = "utf-8") as file:
+        file.write(str(health_status))
 
 # ------------------------
 #    CONFIGURATION
@@ -100,6 +108,7 @@ log(f"{'INTERVAL_MINUTES':20} : {INTERVAL_MINUTES}")
 def main():
     """Main logic for the script."""
 
+    update_health_file(0)
     log("")
 
     # Get the public IP.
@@ -107,6 +116,7 @@ def main():
 
     if not current_ip:
         log("Could not get public IP. Skipping update.")
+        update_health_file(1)
         return
 
     log(f"Current public IP: {current_ip}")
@@ -116,6 +126,7 @@ def main():
         credential = ClientSecretCredential(AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET)
     except Exception as e:
         log(f"Error creating service principal credentials: {e}")
+        update_health_file(1)
         sys.exit(1)
 
     dns_client = DnsManagementClient(credential, SUBSCRIPTION_ID)

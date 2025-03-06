@@ -10,5 +10,10 @@ RUN pip install -r requirements.txt
 # Copy application code
 COPY azure-ddns-updater.py .
 
+# Set up health check
+COPY healthcheck.sh .
+RUN chmod +x ./healthcheck.sh
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD ./healthcheck.sh
+
 # Run the application
 CMD ["python3", "azure-ddns-updater.py"]
