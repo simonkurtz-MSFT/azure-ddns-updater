@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests (eventually), and lint for all supported version of Python
+# This workflow will install Python dependencies and lint for all supported version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
 name: Python Azure DDNS Updater
@@ -33,19 +33,4 @@ jobs:
     - name: Linting the python module with PyLint
       run: |
         pylint ./azure-ddns-updater.py
-    continue-on-error: true
-    # - name: Test with pytest
-    #   run: |
-    #     coverage run -m pytest -v --junitxml=junit/test-results-${{ matrix.python-version }}.xml && coverage html
-    # - name: Upload pytest test results
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: pytest-results-${{ matrix.python-version }}
-    #     path: junit/test-results-${{ matrix.python-version }}.xml
-    #   # Use always() to always run this step to publish test results when there are test failures
-    #   if: ${{ always() }}
-    # - name: Upload code coverage to GitHub Artifacts
-    #   uses: actions/upload-artifact@v4.3.3
-    #   with:
-    #     name: coverage-report-${{ matrix.python-version}}
-    #     path: htmlcov/
+    continue-on-error: false
