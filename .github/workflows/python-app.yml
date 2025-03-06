@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests (eventually), and lint for all support version of Python
+# This workflow will install Python dependencies, run tests (eventually), and lint for all supported version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
 name: Python Azure DDNS Updater
