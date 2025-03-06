@@ -165,7 +165,7 @@ I primarily build for `linux/arm64` as the container will run on a Raspberry Pi,
 1. The image should be in your registry's repository now. If you need to set this version to be `latest` as well, run the following:
 
     ```shell
-    docker tag $IMAGE_NAME:$AZURE_DDNS_UPDATER_CONTAINER_VERSION $CONTAINER_REGISTRY_NAME/$IMAGE_NAME:latest
+    docker tag $CONTAINER_REGISTRY_NAME/$IMAGE_NAME:$AZURE_DDNS_UPDATER_CONTAINER_VERSION $CONTAINER_REGISTRY_NAME/$IMAGE_NAME:latest
     docker push $CONTAINER_REGISTRY_NAME/$IMAGE_NAME:latest
     ```
 
