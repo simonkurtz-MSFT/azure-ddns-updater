@@ -115,7 +115,13 @@ If you are not running a container locally, you can set variables to get passed 
 
 Modify the Docker `compose.yml` file with your values, then save it.
 
-## Test
+## Developing & Testing
+
+### Linting
+
+Lint the Python file via `pylint ./azure-ddns-updater.py`
+
+## Testing
 
 There are two ways to test this:
 
@@ -190,14 +196,14 @@ Pull the image down on a host running Docker. You can either pull it from [my re
     1. `docker run --detach --env-file azure-ddns-updater-env <container-registry-name>/azure-ddns-updater-arm64:latest` to run it detached (preferred method), or
     1. `docker run --it --env-file azure-ddns-updater-env <container-registry-name>/azure-ddns-updater-arm64:latest` to run it interactively and view the logs (good for initial verification)
 
-## View the logs
+### View the logs
 
 When running `detached`, you can view the logs.
 
 1. `docker ps`
 1. `docker logs -f <container id or name>`
 
-## Check Container Health
+### Check Container Health
 
 The Dockerfile sets up a health check, which you can query: `docker inspect --format='{{json .State.Health.Status}}' azure-ddns-updater`
 
