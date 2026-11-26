@@ -152,6 +152,23 @@ Follow these steps if you want to run the container:
 
 Ensure that the desired version is set in the `VERSION` constant in *azure-ddns-updater.py*.
 
+The image installs only runtime dependencies from prebuilt wheels, without pip
+caches or generated Python bytecode. Dependency installation is cached separately
+from application code, so code-only rebuilds do not reinstall packages. If a future
+dependency has no compatible Alpine wheel for the target architecture, the build
+fails rather than adding compilers to the runtime image.
+
+The container runs as UID/GID `10001:10001`. Application files are root-owned and
+read-only to that user; only `/app/health.log` is writable. A read-only root
+filesystem requires a writable health-file mount owned by this UID. Python output
+is unbuffered, and the health check has a 30-second startup grace period.
+
+The `.dockerignore` allowlist excludes local environment files, credentials, Git
+history, virtual environments, and tests from the build context. Add new runtime
+files explicitly to both the Dockerfile and the allowlist when needed. Use
+`docker build --pull ...` to pick up security updates to the Python/Alpine base
+image when rebuilding.
+
 ### ARM64
 
 I primarily build for `linux/arm64` as the container will run on a Raspberry Pi, but you can alter that build behavior as you need (e.g. `linux/amd64`). Replace `<container-registry-name>` and `<version>` with your own.

@@ -1,1 +1,6 @@
-compose.yml
+**
+!Dockerfile
+!requirements.txt
+!azure-ddns-updater.py
+!azure_ddns_updater.py
+!healthcheck.sh

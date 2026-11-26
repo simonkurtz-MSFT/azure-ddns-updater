@@ -1,28 +1,45 @@
+# Preserve the supported Python runtime while using Alpine's small base image.
 FROM python:3.13-alpine
 
-# Set the working directory
+# Avoid runtime bytecode writes and send logs immediately to the container runtime.
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Keep relative application paths, including the health check, rooted in /app.
 WORKDIR /app
 
-# Install dependencies
+# Install runtime dependencies separately so code changes reuse this cached layer.
+# Development tools are declared in requirements-dev.txt and stay out of the image.
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Skip pip caches and bytecode to reduce layer size. Require prebuilt wheels so
+# missing native wheels fail the build rather than requiring a compiler toolchain.
+RUN python -m pip install --no-cache-dir --no-compile --only-binary=:all: -r requirements.txt
 
-# Create a non-root user (no password, no home directory creation and instead use /app as home)
-RUN adduser -D -H -h /app appuser
+# Copy only runtime files, after the dependency layer to preserve build caching.
+COPY azure-ddns-updater.py azure_ddns_updater.py healthcheck.sh ./
+# Create a password-disabled system account with stable IDs and no home directory.
+# Normalize Windows line endings so Alpine's shell can run the health check.
+# Keep /app and source files root-owned and readable, but not writable by appuser.
+# Pre-create health.log beside the source, with read/write access for appuser only.
+RUN addgroup -S -g 10001 appuser \
+    && adduser -S -D -H -u 10001 -G appuser -h /app appuser \
+    && sed -i 's/\r$//' healthcheck.sh \
+    && chmod 644 requirements.txt azure-ddns-updater.py azure_ddns_updater.py healthcheck.sh \
+    && chmod 755 /app \
+    && touch health.log \
+    && chown appuser:appuser health.log \
+    && chmod 600 health.log
 
-# Copy application code
-COPY azure-ddns-updater.py azure_ddns_updater.py ./
+# Drop root privileges for both the updater and its health check. Numeric IDs also
+# make ownership predictable when mounting the writable health file.
+USER 10001:10001
 
-# Set up health check
-COPY healthcheck.sh .
-RUN sed -i 's/\r$//' healthcheck.sh && chmod +x healthcheck.sh
-HEALTHCHECK --interval=60s --timeout=5s --retries=3 CMD /bin/sh ./healthcheck.sh
+# Check the local process and last update result without making network requests.
+# Allow startup time for the first update before counting health-check failures.
+# Invoke the script through /bin/sh so it does not need executable permissions.
+HEALTHCHECK --interval=60s --timeout=5s --start-period=30s --retries=3 \
+    CMD ["/bin/sh", "/app/healthcheck.sh"]
 
-# Change ownership of the application files to the non-root user (appuser) and group (appuser)
-RUN chown -R appuser:appuser /app
-
-# Switch to the non-root user
-USER appuser
-
-# Run the application
+# Exec-form startup makes Python PID 1, receiving container stop signals directly
+# rather than through a shell wrapper.
 CMD ["python3", "azure-ddns-updater.py"]
