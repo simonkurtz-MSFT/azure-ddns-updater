@@ -1,8 +1,5 @@
-azure-core
-azure-identity
-azure-mgmt-dns
-requests
-schedule
-
-# Testing
-pylint
+azure-core==1.41.0
+azure-identity==1.27.0
+azure-mgmt-dns==9.0.0
+requests==2.34.2
+schedule==1.2.2
