@@ -69,9 +69,11 @@ To avoid clobbering global Python packages, it is advisable to create a virtual 
 1. Select *Create Virtual Environment*.
 1. Select *Venv*.
 1. Select the Python version to use based on what you have installed.
-1. Check *requirements.txt* to subsequently install all the packages this project needs. Press *OK* to start the setup. This may take a few minutes.
+1. Check *requirements-dev.txt* to subsequently install the runtime and development packages this project needs. Press *OK* to start the setup. This may take a few minutes.
 
 You should now see a new *.venv* folder in the root of this project. Note that the folder and its contents are deliberately excluded from Git, so they will not be checked in.
+
+Direct runtime dependencies are pinned in `requirements.txt`; `requirements-dev.txt` includes them and adds linting tools. Both are checked weekly for updates by Dependabot. Transitive dependencies are not locked.
 
 ### Configure Environment Variables
 

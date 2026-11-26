@@ -32,7 +32,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        python -m pip install -r requirements-dev.txt
     # Run PyLint against the DDNS updater module.
     - name: Linting the python module with PyLint
       run: |
