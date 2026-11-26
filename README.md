@@ -12,7 +12,7 @@ This repo exists to support scenarios where an IP address needs to be updated in
 
 ## Technology & Prerequisites
 
-This repo contains a Python script and a docker container setup to update A records in Azure DNS. Specifically, the container is set up for an ARM64 build to be run on a Raspberry Pi. Python 3.13 is used with an Alpine container image as Alpine is traditionally a small Linux distro. An Azure DNS zone must exist, and authentication to Azure is done with the help of a Service Principal.
+This repo contains a Python script and a docker container setup to update A records in Azure DNS. Specifically, the container is set up for an ARM64 build to be run on a Raspberry Pi. Python 3.15 is used with an Alpine container image as Alpine is traditionally a small Linux distro. The `python:3.15-alpine` tag tracks patch updates within the latest stable Python minor release without automatically adopting a new minor release. An Azure DNS zone must exist, and authentication to Azure is done with the help of a Service Principal.
 
 ### Simply Running the Container
 
@@ -29,7 +29,7 @@ If all you want to do is run the container, you need the following:
 If you want to code, you need the following in addition to the aforementioned items above:
 
 - An IDE such as VS Code
-- Python 3.13
+- Python 3.15 to match the container runtime
 
 ## Setup
 

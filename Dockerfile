@@ -1,5 +1,6 @@
-# Preserve the supported Python runtime while using Alpine's small base image.
-FROM python:3.13-alpine
+# Use the latest stable Python minor release with Alpine's small base image.
+# Track patch updates within 3.15 without automatically adopting a new minor release.
+FROM python:3.15-alpine
 
 # Avoid runtime bytecode writes and send logs immediately to the container runtime.
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -11,12 +12,14 @@ WORKDIR /app
 # Install runtime dependencies separately so code changes reuse this cached layer.
 # Development tools are declared in requirements-dev.txt and stay out of the image.
 COPY requirements.txt .
+
 # Skip pip caches and bytecode to reduce layer size. Require prebuilt wheels so
 # missing native wheels fail the build rather than requiring a compiler toolchain.
 RUN python -m pip install --no-cache-dir --no-compile --only-binary=:all: -r requirements.txt
 
 # Copy only runtime files, after the dependency layer to preserve build caching.
 COPY azure-ddns-updater.py azure_ddns_updater.py healthcheck.sh ./
+
 # Create a password-disabled system account with stable IDs and no home directory.
 # Normalize Windows line endings so Alpine's shell can run the health check.
 # Keep /app and source files root-owned and readable, but not writable by appuser.
