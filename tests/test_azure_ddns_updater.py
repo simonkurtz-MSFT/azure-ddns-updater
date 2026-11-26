@@ -18,7 +18,6 @@ from schedule import Scheduler
 
 import azure_ddns_updater as updater
 
-
 CURRENT_IP = "203.0.113.10"
 OLD_IP = "203.0.113.20"
 

@@ -1,0 +1,13 @@
+{
+  "extensions": {
+    "markdown-tables": { "enabled": true }
+  },
+  "plugins": {
+    "md007": { "indent": 2 },
+    "md009": { "br_spaces": 0, "strict": true },
+    "md013": { "enabled": false },
+    "md024": { "siblings_only": true },
+    "md033": { "allowed_elements": "br,details,img,summary" },
+    "md041": { "enabled": false }
+  }
+}
