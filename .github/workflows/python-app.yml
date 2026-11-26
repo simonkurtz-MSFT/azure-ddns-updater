@@ -32,5 +32,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Linting the python module with PyLint
       run: |
-        pylint ./azure-ddns-updater.py
+        pylint ./azure-ddns-updater.py ./azure_ddns_updater.py
+    - name: Run unit tests
+      run: python -m unittest discover -s tests -v
     continue-on-error: false

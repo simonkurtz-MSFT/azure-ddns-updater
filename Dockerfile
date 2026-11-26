@@ -11,7 +11,7 @@ RUN pip install -r requirements.txt
 RUN adduser -D -H -h /app appuser
 
 # Copy application code
-COPY azure-ddns-updater.py .
+COPY azure-ddns-updater.py azure_ddns_updater.py ./
 
 # Set up health check
 COPY healthcheck.sh .
