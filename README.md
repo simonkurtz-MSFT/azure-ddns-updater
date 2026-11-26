@@ -84,8 +84,11 @@ If you are not running a container locally, you can set variables to get passed 
 1. Copy the `azure-ddns-updater.env.template` file to one named `azure-ddns-updater.env`.
 1. Replace these placeholders with your own values. **Do not use quotes or apostrophes with strings.**:
 
-    - **RECORD_NAMES** is a comma-separated array with one or more entries (e.g. `[home]`, `[router,home]`)
-    - **INTERVAL_MINUTES**: if negative (e.g. `-1`), the script only executes once; if equal to or greater than zero (ideally, `1` or higher), it executes on that interval.
+    - Required settings must not be empty.
+    - **RECORD_NAMES** is a comma-separated array with one or more non-empty entries (e.g. `[home]`, `[router,home]`).
+    - **INTERVAL_MINUTES** defaults to `5` when omitted and must be an integer.
+      A negative value (e.g. `-1`) runs once; a positive value sets the interval
+      in minutes. Zero is rejected because the scheduler cannot run it.
 
     ```shell
     AZURE_CLIENT_ID=<your Client / App ID>
@@ -119,7 +122,12 @@ Modify the Docker `compose.yml` file with your values, then save it.
 
 ### Linting
 
-Lint the Python file via `pylint ./azure-ddns-updater.py`
+Lint the Python files via `pylint ./azure-ddns-updater.py ./azure_ddns_updater.py`.
+
+### Automated Tests
+
+Run `python -m unittest discover -s tests -v`. The tests use isolated files and mocked
+HTTP and Azure operations; they do not require credentials or network access.
 
 ## Testing
 
@@ -206,6 +214,10 @@ When running `detached`, you can view the logs.
 ### Check Container Health
 
 The Dockerfile sets up a health check, which you can query: `docker inspect --format='{{json .State.Health.Status}}' azure-ddns-updater`
+
+The updater reports healthy after a completed update succeeds for every record.
+A single-run invocation exits nonzero if configuration, public IP lookup, or a DNS
+operation fails.
 
 For more details, use jq to format the JSON of the larger object. You may need to get jq via `sudo apt-get install jq`.
 
