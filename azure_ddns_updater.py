@@ -15,14 +15,13 @@ from azure.mgmt.dns import DnsManagementClient
 from azure.mgmt.dns.models import ARecord, RecordSet
 from schedule import Scheduler
 
-
 VERSION: Final[str] = "1.1.0"
 TTL: Final[int] = 300
 HEALTH_FILE: Final[Path] = Path(__file__).with_name("health.log")
 
 
 @dataclass(frozen=True)
-class Config:  # pylint: disable=too-many-instance-attributes
+class Config:
     """Validated settings for an updater process."""
 
     client_id: str

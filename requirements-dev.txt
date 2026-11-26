@@ -1,3 +1,6 @@
 -r requirements.txt
 
-pylint==4.1.4
+ruff==0.16.2
+mdformat==1.0.0
+mdformat-gfm==1.0.0
+pymarkdownlnt==0.9.42
